@@ -1,0 +1,15 @@
+{
+  "name": "Copy Chapter",
+  "version": "0.1.0",
+  "manifest_version": 3,
+  "description": "Copy BNS chapter",
+  "background": {
+    "service_worker": "background.js"
+  },
+  "options_page": "options.html",
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "permissions": ["storage", "activeTab", "scripting", "tabs"],
+  "host_permissions": ["https://vip.bachngocsach.com/*"]
+}

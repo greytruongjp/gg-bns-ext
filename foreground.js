@@ -11,22 +11,25 @@ chrome.storage.local.get("enabled", (data) => {
         var bookName = book.innerText;
         var titleText = title.innerText;
         var chapterText = chapter.innerHTML;
-        insertTexttoDb(titleText, chapterText, bookName);
+        var chapterNo = parseInt(textbetween(titleText, "Chương", ":"));
+        // console.log(chapterNo);
+        insertTexttoDb(titleText, chapterText, chapterNo, bookName);
         // var wholeContent =
         //   "\n<h3>" + titleText + "</h3>\n\n" + chapterText + "\n\n";
         // copyTextToClipboard(wholeContent);
       }
-    }, 2000);
+    }, 3000);
   } else {
     //it is disabled
   }
 });
 
-function insertTexttoDb(titleText, chapterText, bookName) {
+function insertTexttoDb(titleText, chapterText, chapterNo, bookName) {
   // console.log("insert Text to DB function");
   postData("http://localhost/qbook/api/create.php", {
     chapter_title: titleText,
     chapter_content: chapterText,
+    chapter_no: chapterNo,
     book_name: bookName,
   }).then((data) => {
     console.log(data.status);
@@ -68,6 +71,23 @@ async function postData(url = "", data = {}) {
   return response.json(); // parses JSON response into native JavaScript objects
 }
 
+function textbetween(s, prefix, suffix) {
+  var i = s.indexOf(prefix);
+  if (i >= 0) {
+    s = s.substring(i + prefix.length);
+  } else {
+    return "";
+  }
+  if (suffix) {
+    i = s.indexOf(suffix);
+    if (i >= 0) {
+      s = s.substring(0, i);
+    } else {
+      return "";
+    }
+  }
+  return s;
+}
 // function copyTextToClipboard(text) {
 //   var copyFrom = document.createElement("textarea");
 //   copyFrom.textContent = text;

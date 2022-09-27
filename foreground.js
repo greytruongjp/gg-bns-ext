@@ -4,13 +4,17 @@ chrome.storage.local.get("enabled", (data) => {
     setTimeout(function () {
       var chapter = document.getElementsByClassName("webkit-chapter")[0];
       var title = document.getElementsByClassName("chapter-title")[0];
-      if (chapter && title) {
-        var titleText = title.innerHTML;
+      var book = getElementByXpath(
+        "/html/body/div[1]/div[1]/div[1]/div[2]/div[1]/div/div/nav/ol/li[3]/a"
+      );
+      if (chapter && title && book) {
+        var bookName = book.innerText;
+        var titleText = title.innerText;
         var chapterText = chapter.innerHTML;
-        var wholeContent =
-          "\n<h3>" + titleText + "</h3>\n\n" + chapterText + "\n\n";
-        copyTextToClipboard(wholeContent);
-        // console.log(wholeContent);
+        insertTexttoDb(titleText, chapterText, bookName);
+        // var wholeContent =
+        //   "\n<h3>" + titleText + "</h3>\n\n" + chapterText + "\n\n";
+        // copyTextToClipboard(wholeContent);
       }
     }, 2000);
   } else {
@@ -18,26 +22,73 @@ chrome.storage.local.get("enabled", (data) => {
   }
 });
 
-function copyTextToClipboard(text) {
-  //Create a textbox field where we can insert text to.
-  var copyFrom = document.createElement("textarea");
-  //Set the text content to be the text you wished to copy.
-  copyFrom.textContent = text;
-  //Append the textbox field into the body as a child.
-  document.body.appendChild(copyFrom);
-  //Select all the text!
-  copyFrom.select();
-  navigator.clipboard.writeText(copyFrom.value).then(
-    () => {
-      //clipboard successfully set
-      console.log("copy done");
-    },
-    () => {
-      //clipboard write failed, use fallback
-      console.log("copy fail");
+function insertTexttoDb(titleText, chapterText, bookName) {
+  // console.log("insert Text to DB function");
+  postData("http://localhost/qbook/api/create.php", {
+    chapter_title: titleText,
+    chapter_content: chapterText,
+    book_name: bookName,
+  }).then((data) => {
+    console.log(data.status);
+    if (data.status == 200) {
+      //  trigger next button
+      let x = getElementByXpath(
+        "/html/body/div[1]/div[1]/div[1]/div[2]/div[1]/div/div/div[2]/div[1]/div[2]/a"
+      );
+      x.click();
     }
-  );
-  //de-select the text using blur() & remove.
-  copyFrom.blur();
-  document.body.removeChild(copyFrom);
+  });
 }
+
+function getElementByXpath(path) {
+  return document.evaluate(
+    path,
+    document,
+    null,
+    XPathResult.FIRST_ORDERED_NODE_TYPE,
+    null
+  ).singleNodeValue;
+}
+
+async function postData(url = "", data = {}) {
+  // Default options are marked with *
+  const response = await fetch(url, {
+    method: "POST", // *GET, POST, PUT, DELETE, etc.
+    mode: "cors", // no-cors, *cors, same-origin
+    cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
+    credentials: "same-origin", // include, *same-origin, omit
+    headers: {
+      "Content-Type": "application/json",
+      // 'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    redirect: "follow", // manual, *follow, error
+    referrerPolicy: "no-referrer", // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+    body: JSON.stringify(data), // body data type must match "Content-Type" header
+  });
+  return response.json(); // parses JSON response into native JavaScript objects
+}
+
+// function copyTextToClipboard(text) {
+//   var copyFrom = document.createElement("textarea");
+//   copyFrom.textContent = text;
+//   document.body.appendChild(copyFrom);
+//   copyFrom.select();
+//   navigator.clipboard.writeText(copyFrom.value).then(
+//     () => {
+//       console.log("copy done");
+//       copyFrom.blur();
+//       document.body.removeChild(copyFrom);
+
+//       // trigger next button
+//       // let x = getElementByXpath(
+//       //   "/html/body/div[1]/div[1]/div[1]/div[2]/div[1]/div/div/div[2]/div[1]/div[2]/a"
+//       // );
+//       // x.click();
+//     },
+//     () => {
+//       //clipboard write failed, use fallback
+//       console.log("copy fail");
+//     }
+//   );
+//   //de-select the text using blur() & remove.
+// }

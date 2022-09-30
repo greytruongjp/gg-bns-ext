@@ -1,22 +1,29 @@
-chrome.storage.local.get("enabled", (data) => {
+var sourceSelect = "vipbsn";
+var modeSelect = "0";
+
+chrome.storage.local.get(["enabled", "sourceSelect", "modeSelect"], (data) => {
+  if (data.sourceSelect) {
+    sourceSelect = data.sourceSelect;
+  }
+  if (data.modeSelect) {
+    modeSelect = data.modeSelect;
+  }
   if (data.enabled) {
     //it is enabled, do accordingly
     setTimeout(function () {
-      var chapter = document.getElementsByClassName("webkit-chapter")[0];
-      var title = document.getElementsByClassName("chapter-title")[0];
-      var book = getElementByXpath(
-        "/html/body/div[1]/div[1]/div[1]/div[2]/div[1]/div/div/nav/ol/li[3]/a"
-      );
-      if (chapter && title && book) {
-        var bookName = book.innerText;
-        var titleText = title.innerText;
-        var chapterText = chapter.innerHTML;
-        var chapterNo = parseInt(textbetween(titleText, "Chương", ":"));
-        // console.log(chapterNo);
-        insertTexttoDb(titleText, chapterText, chapterNo, bookName);
-        // var wholeContent =
-        //   "\n<h3>" + titleText + "</h3>\n\n" + chapterText + "\n\n";
-        // copyTextToClipboard(wholeContent);
+      if sourceSelect == 'vipsbns' {
+        var chapter = document.getElementsByClassName("webkit-chapter")[0];
+        var title = document.getElementsByClassName("chapter-title")[0];
+        var book = getElementByXpath(
+          "/html/body/div[1]/div[1]/div[1]/div[2]/div[1]/div/div/nav/ol/li[3]/a"
+        );
+        if (chapter && title && book) {
+          var bookName = book.innerText;
+          var titleText = title.innerText;
+          var chapterText = chapter.innerHTML;
+          var chapterNo = parseInt(textbetween(titleText, "Chương", ":"));
+          insertTexttoDb(titleText, chapterText, chapterNo, bookName, modeSelect);
+        }
       }
     }, 3000);
   } else {
@@ -24,7 +31,13 @@ chrome.storage.local.get("enabled", (data) => {
   }
 });
 
-function insertTexttoDb(titleText, chapterText, chapterNo, bookName) {
+function insertTexttoDb(
+  titleText,
+  chapterText,
+  chapterNo,
+  bookName,
+  modeSelect
+) {
   // console.log("insert Text to DB function");
   postData("http://localhost/qbook/api/create.php", {
     chapter_title: titleText,
@@ -35,10 +48,13 @@ function insertTexttoDb(titleText, chapterText, chapterNo, bookName) {
     console.log(data.status);
     if (data.status == 200) {
       //  trigger next button
-      let x = getElementByXpath(
-        "/html/body/div[1]/div[1]/div[1]/div[2]/div[1]/div/div/div[2]/div[1]/div[2]/a"
-      );
-      x.click();
+      console.log(modeSelect);
+      if (modeSelect == 1) {
+        let x = getElementByXpath(
+          "/html/body/div[1]/div[1]/div[1]/div[2]/div[1]/div/div/div[2]/div[1]/div[2]/a"
+        );
+        x.click();
+      }
     }
   });
 }

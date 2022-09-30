@@ -1,5 +1,5 @@
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-  console.log(tabId);
+  // console.log(tabId);
   if (changeInfo.status === "complete" && /^http/.test(tab.url)) {
     chrome.scripting
       .executeScript({

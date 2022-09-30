@@ -11,18 +11,28 @@ chrome.storage.local.get(["enabled", "sourceSelect", "modeSelect"], (data) => {
   if (data.enabled) {
     //it is enabled, do accordingly
     setTimeout(function () {
-      if sourceSelect == 'vipsbns' {
+      if (sourceSelect == "vipbsn") {
         var chapter = document.getElementsByClassName("webkit-chapter")[0];
         var title = document.getElementsByClassName("chapter-title")[0];
         var book = getElementByXpath(
           "/html/body/div[1]/div[1]/div[1]/div[2]/div[1]/div/div/nav/ol/li[3]/a"
         );
+        var bookAuthor = getElementByXpath(
+          '//*[@id="id_chap_content"]/ul/li[2]/p'
+        ).innerText;
         if (chapter && title && book) {
           var bookName = book.innerText;
           var titleText = title.innerText;
           var chapterText = chapter.innerHTML;
           var chapterNo = parseInt(textbetween(titleText, "Chương", ":"));
-          insertTexttoDb(titleText, chapterText, chapterNo, bookName, modeSelect);
+          insertTexttoDb(
+            titleText,
+            chapterText,
+            chapterNo,
+            bookName,
+            modeSelect,
+            bookAuthor
+          );
         }
       }
     }, 3000);
@@ -36,19 +46,19 @@ function insertTexttoDb(
   chapterText,
   chapterNo,
   bookName,
-  modeSelect
+  modeSelect,
+  bookAuthor
 ) {
-  // console.log("insert Text to DB function");
   postData("http://localhost/qbook/api/create.php", {
     chapter_title: titleText,
     chapter_content: chapterText,
     chapter_no: chapterNo,
     book_name: bookName,
+    book_author: bookAuthor,
   }).then((data) => {
     console.log(data.status);
     if (data.status == 200) {
       //  trigger next button
-      console.log(modeSelect);
       if (modeSelect == 1) {
         let x = getElementByXpath(
           "/html/body/div[1]/div[1]/div[1]/div[2]/div[1]/div/div/div[2]/div[1]/div[2]/a"

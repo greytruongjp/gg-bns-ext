@@ -20,19 +20,24 @@ chrome.storage.local.get(["enabled", "sourceSelect", "modeSelect"], (data) => {
         var bookAuthor = getElementByXpath(
           '//*[@id="id_chap_content"]/ul/li[2]/p'
         ).innerText;
-        if (chapter && title && book) {
-          var bookName = book.innerText;
-          var titleText = title.innerText;
-          var chapterText = chapter.innerHTML;
-          var chapterNo = parseInt(textbetween(titleText, "Chương", ":"));
-          insertTexttoDb(
-            titleText,
-            chapterText,
-            chapterNo,
-            bookName,
-            modeSelect,
-            bookAuthor
-          );
+        var btnBuyChapter = document.getElementsByClassName("btn-buy")[0];
+        if (btnBuyChapter) {
+          console.log("chưa mua chương");
+        } else {
+          if (chapter && title && book && !btnBuyChapter) {
+            var bookName = book.innerText;
+            var titleText = title.innerText;
+            var chapterText = chapter.innerHTML;
+            var chapterNo = parseInt(textbetween(titleText, "Chương", ":"));
+            insertTexttoDb(
+              titleText,
+              chapterText,
+              chapterNo,
+              bookName,
+              modeSelect,
+              bookAuthor
+            );
+          }
         }
       }
     }, 3000);

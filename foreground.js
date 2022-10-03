@@ -1,5 +1,7 @@
 var sourceSelect = "vipbsn";
 var modeSelect = "0";
+var localPostUrl = "http://localhost/qbook/api/create.php";
+var postUrl = "https://tukulab.com/qbook/api/create.php";
 
 chrome.storage.local.get(["enabled", "sourceSelect", "modeSelect"], (data) => {
   if (data.sourceSelect) {
@@ -54,7 +56,7 @@ function insertTexttoDb(
   modeSelect,
   bookAuthor
 ) {
-  postData("http://localhost/qbook/api/create.php", {
+  postData(postUrl, {
     chapter_title: titleText,
     chapter_content: chapterText,
     chapter_no: chapterNo,

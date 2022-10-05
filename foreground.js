@@ -3,50 +3,53 @@ var modeSelect = "0";
 var localPostUrl = "http://localhost/qbook/api/create.php";
 var postUrl = "https://tukulab.com/qbook/api/create.php";
 
-chrome.storage.local.get(["enabled", "sourceSelect", "modeSelect"], (data) => {
-  if (data.sourceSelect) {
-    sourceSelect = data.sourceSelect;
-  }
-  if (data.modeSelect) {
-    modeSelect = data.modeSelect;
-  }
-  if (data.enabled) {
-    //it is enabled, do accordingly
-    setTimeout(function () {
-      if (sourceSelect == "vipbsn") {
-        var chapter = document.getElementsByClassName("webkit-chapter")[0];
-        var title = document.getElementsByClassName("chapter-title")[0];
-        var book = getElementByXpath(
-          "/html/body/div[1]/div[1]/div[1]/div[2]/div[1]/div/div/nav/ol/li[3]/a"
-        );
-        var bookAuthor = getElementByXpath(
-          '//*[@id="id_chap_content"]/ul/li[2]/p'
-        ).innerText;
-        var btnBuyChapter = document.getElementsByClassName("btn-buy")[0];
-        if (btnBuyChapter) {
-          console.log("chưa mua chương");
-        } else {
-          if (chapter && title && book && !btnBuyChapter) {
-            var bookName = book.innerText;
-            var titleText = title.innerText;
-            var chapterText = chapter.innerHTML;
-            var chapterNo = parseInt(textbetween(titleText, "Chương", ":"));
-            insertTexttoDb(
-              titleText,
-              chapterText,
-              chapterNo,
-              bookName,
-              modeSelect,
-              bookAuthor
-            );
+chrome.storage.local.get(
+  ["enabled", "sourceSelect", "modeSelect", "manualMode"],
+  (data) => {
+    if (data.sourceSelect) {
+      sourceSelect = data.sourceSelect;
+    }
+    if (data.modeSelect) {
+      modeSelect = data.modeSelect;
+    }
+    if (data.enabled || data.manualMode) {
+      //it is enabled, do accordingly
+      setTimeout(function () {
+        if (sourceSelect == "vipbsn") {
+          var chapter = document.getElementsByClassName("webkit-chapter")[0];
+          var title = document.getElementsByClassName("chapter-title")[0];
+          var book = getElementByXpath(
+            "/html/body/div[1]/div[1]/div[1]/div[2]/div[1]/div/div/nav/ol/li[3]/a"
+          );
+          var bookAuthor = getElementByXpath(
+            '//*[@id="id_chap_content"]/ul/li[2]/p'
+          ).innerText;
+          var btnBuyChapter = document.getElementsByClassName("btn-buy")[0];
+          if (btnBuyChapter) {
+            console.log("chưa mua chương");
+          } else {
+            if (chapter && title && book && !btnBuyChapter) {
+              var bookName = book.innerText;
+              var titleText = title.innerText;
+              var chapterText = chapter.innerHTML;
+              var chapterNo = parseInt(textbetween(titleText, "Chương", ":"));
+              insertTexttoDb(
+                titleText,
+                chapterText,
+                chapterNo,
+                bookName,
+                modeSelect,
+                bookAuthor
+              );
+            }
           }
         }
-      }
-    }, 3000);
-  } else {
-    //it is disabled
+      }, 3000);
+    } else {
+      //it is disabled
+    }
   }
-});
+);
 
 function insertTexttoDb(
   titleText,

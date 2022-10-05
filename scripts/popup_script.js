@@ -27,8 +27,8 @@ modeSelect.addEventListener("change", function () {
 });
 // Đoạn này xử lý khi click vào nút `Save`
 
-// var button = document.getElementById("save");
-// button.onclick = injectScript;
+var button = document.getElementById("manualBtn");
+button.onclick = injectScript;
 
 // async function injectScript() {
 //   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
@@ -44,8 +44,17 @@ modeSelect.addEventListener("change", function () {
 //   );
 // }
 
-// async function getText() {
-//   var chapterText =
-//     document.getElementsByClassName("webkit-chapter")[0].innerHTML;
-//   return chapterText;
-// }
+async function injectScript() {
+  chrome.storage.local.set({ manualMode: true });
+  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+  await chrome.scripting
+    .executeScript({
+      target: { tabId: tab.id },
+      files: ["./foreground.js"],
+    })
+    .then(() => {
+      chrome.storage.local.set({ manualMode: false });
+      console.log("done");
+    })
+    .catch((err) => console.log(err));
+}

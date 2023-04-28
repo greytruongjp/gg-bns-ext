@@ -130,27 +130,3 @@ function textbetween(s, prefix, suffix) {
   }
   return s;
 }
-// function copyTextToClipboard(text) {
-//   var copyFrom = document.createElement("textarea");
-//   copyFrom.textContent = text;
-//   document.body.appendChild(copyFrom);
-//   copyFrom.select();
-//   navigator.clipboard.writeText(copyFrom.value).then(
-//     () => {
-//       console.log("copy done");
-//       copyFrom.blur();
-//       document.body.removeChild(copyFrom);
-
-//       // trigger next button
-//       // let x = getElementByXpath(
-//       //   "/html/body/div[1]/div[1]/div[1]/div[2]/div[1]/div/div/div[2]/div[1]/div[2]/a"
-//       // );
-//       // x.click();
-//     },
-//     () => {
-//       //clipboard write failed, use fallback
-//       console.log("copy fail");
-//     }
-//   );
-//   //de-select the text using blur() & remove.
-// }

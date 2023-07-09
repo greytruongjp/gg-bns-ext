@@ -11,5 +11,5 @@
     "default_popup": "popup.html"
   },
   "permissions": ["storage", "activeTab", "scripting", "tabs"],
-  "host_permissions": ["https://bachngocsach.vip/*"]
+  "host_permissions": ["https://bachngocsach.vip/*", "https://metruyencv.com/*"]
 }

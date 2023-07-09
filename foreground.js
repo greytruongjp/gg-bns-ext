@@ -59,7 +59,7 @@ chrome.storage.local.get(
           var chapter = getElementByXpath('//*[@id="article"]');
           if (chapter && title && book) {
             var bookAuthor = "mtc";
-            var bookName = book.innerText.split(" -")[0];
+            var bookName = book.innerText.slice(4).split(" -")[0];
             var titleText = title.innerHTML;
             var chapterText = chapter.innerHTML;
             var totalDivsInChapter = occurrences(chapterText, "</div>");
@@ -73,6 +73,8 @@ chrome.storage.local.get(
                 chapterText = newChapterText;
               }
             }
+            var regex = /<br\s*[\/]?>/gi;
+            chapterText = chapterText.replace(regex, "\n");
             var chapterNo = parseInt(book.innerText.split("- Chương ")[1]);
             console.log("title " + titleText);
             console.log("chapter " + chapterText);
@@ -144,7 +146,7 @@ function insertTexttoDbMtc(
       //  trigger next button
       if (modeSelect == 1) {
         let btnNextMtc = getElementByXpath(
-          "/html/body/div[1]/div/div/main/div[3]/div[6]/div[1]/a[2]"
+          '//*[@id="js-read__body"]/div[1]/a[2]'
         );
         btnNextMtc.click();
       }
